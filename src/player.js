@@ -1,6 +1,6 @@
 let player = {
-  x: 0,
-  y: 0,
+  x: 300,
+  y: 300,
   w: 48, 
   h: 48, 
   speed: 4,
