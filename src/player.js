@@ -1,6 +1,6 @@
 let player = {
-  x: 400,
-  y: 300,
+  x: 180,
+  y: 330,
   w: 48, 
   h: 48, 
   speed: 2.5,
@@ -67,7 +67,7 @@ let player = {
     }
     
     // Debug collision (pieds)
-    fill(255, 255, 0, 100);
+    fill(255, 255, 0, 0);
     rect(this.x + 6, this.y + 39, 36, 8);
   }
 };
