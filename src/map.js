@@ -37,7 +37,7 @@ function drawWalls() {
   // Debug : On dessine les zones de collision en rouge très transparent
   // pour vérifier qu'elles sont bien placées à la BASE des murs dessinés.
   noStroke();
-  fill(255, 0, 255, 0); 
+  fill(255, 0, 255, 30); 
   for (let w of currentWalls) {
     rect(w.x, w.y, w.w, w.h);
   }
