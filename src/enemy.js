@@ -29,6 +29,9 @@ class Enemy {
     // HP (optionnel)
     this.hp = 1;
     this.hpmax = 1;
+    // À ajouter à la fin du constructor dans enemy.js
+    this.moveTimer = 0;
+    this.moveDuration = 60; // Il bouge pendant 60 frames (1 sec) avant de changer
   }
 
   // Vérifie les collisions avec les murs pour la hitbox de mur
@@ -46,27 +49,57 @@ class Enemy {
   }
 
   // Met à jour la position de l'ennemi
-  update() {
-    let nextX = this.x + this.vx;
-    let nextY = this.y + this.vy;
+  // Dans ton fichier enemy.js, modifie la méthode update
+update() {
+  // 1. GESTION DE L'IA (Mouvement aléatoire)
+  if (!this.moveTimer) this.moveTimer = 0; // Sécurité si pas défini
 
-    // Vérifier X et Y séparément pour permettre le glissement
-    if (!this.checkWallCollision(nextX, this.y)) {
-      this.x = nextX;
-    }
-    if (!this.checkWallCollision(this.x, nextY)) {
-      this.y = nextY;
-    }
+  this.moveTimer--;
 
-    // Gestion de l'animation
-    if (this.isMoving && this.sprites.length > 0) {
-      this.animTimer++;
-      if (this.animTimer > 12) {
-        this.frameIndex = (this.frameIndex + 1) % this.sprites.length;
-        this.animTimer = 0;
-      }
+  if (this.moveTimer <= 0) {
+    // Choisit une direction au hasard (-1, 0 ou 1)
+    // On multiplie par speed pour garder un mouvement lent
+    this.vx = (Math.random() * 2 - 1) * this.speed;
+    this.vy = (Math.random() * 2 - 1) * this.speed;
+    
+    // Il garde cette direction entre 1 et 3 secondes (60 à 180 frames)
+    this.moveTimer = Math.floor(random(60, 180));
+  }
+
+  // 2. CALCUL DES PROCHAINES POSITIONS
+  let nextX = this.x + this.vx;
+  let nextY = this.y + this.vy;
+
+  // 3. COLLISIONS AVEC LES MURS
+  // On teste X et Y séparément pour que l'ennemi puisse glisser contre un mur
+  if (!this.checkWallCollision(nextX, this.y)) {
+    this.x = nextX;
+  } else {
+    this.vx *= -1; // Rebondit s'il touche un mur vertical
+    this.moveTimer = 30; // Changera de direction plus vite
+  }
+
+  if (!this.checkWallCollision(this.x, nextY)) {
+    this.y = nextY;
+  } else {
+    this.vy *= -1; // Rebondit s'il touche un mur horizontal
+    this.moveTimer = 30;
+  }
+
+  // 4. ANIMATION & ORIENTATION
+  this.isMoving = (this.vx !== 0 || this.vy !== 0);
+  if (this.vx < 0) this.facingLeft = true;
+  if (this.vx > 0) this.facingLeft = false;
+
+  // Gestion de l'animation (code de ton binôme)
+  if (this.isMoving && this.sprites.length > 0) {
+    this.animTimer++;
+    if (this.animTimer > 12) {
+      this.frameIndex = (this.frameIndex + 1) % this.sprites.length;
+      this.animTimer = 0;
     }
   }
+}
 
   // Dessine l'ennemi
   draw() {

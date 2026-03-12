@@ -22,17 +22,35 @@ function draw() {
   player.update();
   player.draw();
   
-  // On gère les ennemis
+  // On gère l'ennemi
   if (mushroomEnemy) {
     mushroomEnemy.update();
     mushroomEnemy.draw();
+
+    // --- TEST DE COLLISION MORTELLE ---
+    // On vérifie si l'ennemi touche le joueur
+    // Note : On passe l'objet 'player' entier
+    if (mushroomEnemy.collidesWith(player)) {
+      handleGameOver();
+    }
   }
 
-  // On affiche les murs de collision (à masquer pour le rendu final)
+  // On affiche les murs de collision
   drawWalls();
   
   // Outil de mesure
   showCoords();
+}
+
+// Petite fonction pour gérer la défaite
+function handleGameOver() {
+  console.log("Aie ! Le canard a touché le champignon !");
+  
+  // Pour l'instant, on peut juste remettre le joueur au début
+  player.x = 100; 
+  player.y = 100;
+  
+  // Plus tard, on pourra ajouter un écran "Game Over"
 }
 
 function showCoords() {
