@@ -1,95 +1,118 @@
 * {
-	box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 body {
-	margin: 0;
-	min-height: 100vh;
-	font-family: "Trebuchet MS", "Segoe UI", sans-serif;
-	background:
-		radial-gradient(circle at top, #4f6076 0%, #263342 45%, #161d25 100%);
-	color: #f2f5eb;
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    background:
+        radial-gradient(circle at top, #4f6076 0%, #263342 45%, #161d25 100%);
+    color: #f2f5eb;
 }
 
+/* --- ÉCRAN D'ACCUEIL --- */
 .home-screen {
-	min-height: 100vh;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 24px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
 }
 
 .home-panel {
-	width: min(520px, 100%);
-	text-align: center;
-	padding: 32px 24px;
-	border: 3px solid rgba(255, 255, 255, 0.2);
-	background: rgba(15, 20, 14, 0.65);
-	backdrop-filter: blur(2px);
-	box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
-	border-radius: 18px;
+    width: min(520px, 100%);
+    text-align: center;
+    padding: 32px 24px;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    background: rgba(15, 20, 14, 0.65);
+    backdrop-filter: blur(2px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    border-radius: 18px;
 }
 
 .home-title {
-	margin: 0;
-	font-size: clamp(2.2rem, 5vw, 3.2rem);
-	letter-spacing: 2px;
-	text-transform: uppercase;
+    margin: 0;
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    letter-spacing: 2px;
+    text-transform: uppercase;
 }
 
 .home-subtitle {
-	margin: 10px 0 28px;
-	color: #dde7cc;
+    margin: 10px 0 28px;
+    color: #dde7cc;
 }
 
 .play-button {
-	border: 0;
-	background: transparent;
-	padding: 0;
-	cursor: pointer;
-	transition: transform 0.15s ease;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    transition: transform 0.15s ease;
 }
 
 .play-button:hover {
-	transform: translateY(-2px) scale(1.02);
+    transform: translateY(-2px) scale(1.02);
 }
 
 .play-button:active {
-	transform: scale(0.98);
+    transform: scale(0.98);
 }
 
 .play-button img {
-	width: min(240px, 70vw);
-	height: auto;
-	image-rendering: pixelated;
-	display: block;
+    width: min(240px, 70vw);
+    height: auto;
+    image-rendering: pixelated;
+    display: block;
 }
 
+/* --- ZONE DE JEU --- */
 .game-wrapper {
-	display: none;
-	min-height: 100vh;
-	align-items: center;
-	justify-content: center;
-	padding: 16px;
+    display: none;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
 }
 
 .game-wrapper.active {
-	display: flex;
+    display: flex;
+}
+
+.game-container {
+    position: relative; /* INDISPENSABLE pour que les HP se fixent ici */
+    display: inline-block;
 }
 
 .game-container canvas {
-	display: block;
-	box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-	max-width: 100%;
-	height: auto;
+    display: block;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    max-width: 100%;
+    height: auto;
 }
 
-@media (max-width: 960px) {
-	.home-panel {
-		padding: 24px 16px;
-	}
+/* --- BARRE DE VIE (HP) --- */
+.hp-bar {
+    position: absolute;
+    top: 10px;      /* Ajuste pour monter/descendre dans le coin bleu */
+    left: 10px;     /* Ajuste pour aller à gauche/droite dans le coin bleu */
+    display: flex;
+    gap: 8px;       /* Espace entre les points de vie */
+    z-index: 100;   /* Pour passer devant le canvas */
+}
 
-	.home-subtitle {
-		margin-bottom: 22px;
-	}
+.hp-point {
+    /* --- TAILLE RÉDUITE --- */
+    width: 40px;    /* J'ai réduit ici (anciennement 60px) */
+    height: auto;
+    
+    image-rendering: pixelated; 
+    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+}
+
+/* Optionnel : Ajuste aussi la taille sur mobile si besoin */
+@media (max-width: 960px) {
+    .hp-point {
+        width: 30px; 
+    }
 }
