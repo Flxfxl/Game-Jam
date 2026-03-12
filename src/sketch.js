@@ -13,6 +13,10 @@ function preload() {
     }
   });
 
+  if (typeof soundFormats === 'function') {
+    soundFormats('mp3');
+  }
+
   player.attackSprite = loadImage(
     './assets/attack/pixil-frame-0.png',
     img => { player.attackSprite = img; },
@@ -21,6 +25,16 @@ function preload() {
       player.attackSprite = null;
     }
   );
+
+  if (typeof loadSound === 'function') {
+    player.quackSound = loadSound('./sound/Duck Quack - Sound Effect (HD).mp3',
+      () => {},
+      err => { console.warn('Impossible de charger le son canard :', err); }
+    );
+  } else {
+    console.warn('p5.sound non disponible: le son de canard ne pourra pas jouer.');
+    player.quackSound = null;
+  }
 
   // Créer l'ennemi (la fonction create gère maintenant sa propre découpe)
   createMushroomEnemy(450, 300);

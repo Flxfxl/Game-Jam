@@ -14,6 +14,7 @@ let player = {
   facingLeft: false, 
 
   attackSprite: null,
+  quackSound: null,
   isAttacking: false,
   attackTimer: 0,
   attackHitboxDuration: 6,
@@ -50,6 +51,14 @@ let player = {
     this.attackStartY = this.y;
     this.facingLeft = (this.lastDirection === 'left');
     this.attackHitbox = this.getAttackHitbox();
+
+    if (this.quackSound && typeof this.quackSound.play === 'function') {
+      try {
+        this.quackSound.play();
+      } catch (e) {
+        console.warn('Impossible de jouer le quack:', e);
+      }
+    }
   },
 
   handleKey: function(k, kc) {
