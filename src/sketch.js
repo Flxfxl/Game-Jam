@@ -85,40 +85,25 @@ function draw() {
 }
 
 // --- GESTION DES DÉGÂTS AVEC RECUL ---
+// --- GESTION DES DÉGÂTS (SANS RECUL) ---
 function takeDamage() {
-  if (isInvincible) return; // Sécurité pour ne pas perdre 2 coeurs d'un coup
+  if (isInvincible) return; 
 
   health--;
   updateUI();
 
-  // 1. Appliquer le recul (Knockback) avec limites
-  let knockbackForce = 40; 
-  let targetX = player.x;
+  // Joue le son quand on a mal
+  if (player.quackSound) player.quackSound.play();
 
-  if (mushroomEnemy.x < player.x) {
-    targetX += knockbackForce; // Poussé vers la droite
-  } else {
-    targetX -= knockbackForce; // Poussé vers la gauche
-  }
+  // On a supprimé toute la logique de "knockbackForce" et de "constrain" sur player.x
+  // Le canard ne bouge plus de sa position actuelle.
 
-  // --- LA CORRECTION EST ICI ---
-  // On force player.x à rester entre 20 et 880 (pour un canvas de 900px)
-  // Ça évite que le canard sorte de l'écran et fasse bugger le CSS
-  player.x = constrain(targetX, 20, width - 20);
-  player.y = constrain(player.y - 10, 20, height - 20); 
-
-  // 2. Activer l'invincibilité temporaire
+  // On active l'invincibilité pour ne pas perdre tous les PV d'un coup
   isInvincible = true;
-  
-  // Petit effet visuel : on rend le canard un peu transparent
-  // player.alpha = 150; 
-
-  setTimeout(() => {
-    isInvincible = false;
-    // player.alpha = 255;
+  setTimeout(() => { 
+    isInvincible = false; 
   }, 1000); 
 
-  // 3. Vérifier la mort
   if (health <= 0) {
     handleGameOver();
   }
