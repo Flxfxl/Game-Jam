@@ -54,7 +54,7 @@ function draw() {
       player.attackHitbox.y,
       player.attackHitbox.w,
       player.attackHitbox.h,
-      mushroomEnemy.x,
+       mushroomEnemy.x,
       mushroomEnemy.y,
       mushroomEnemy.w,
       mushroomEnemy.h
