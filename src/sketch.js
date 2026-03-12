@@ -1,3 +1,5 @@
+let gameStarted = false;
+
 function preload() {
   loadLevel("room1"); 
   
@@ -11,10 +13,18 @@ function preload() {
 
 function setup() {
   // On s'assure que le canvas fait la taille de la map
-  createCanvas(900, 600);
+  const canvas = createCanvas(900, 600);
+  canvas.parent('game-container');
+
+  setupHomeScreen();
+  noLoop();
 }
 
 function draw() {
+  if (!gameStarted) {
+    return;
+  }
+
   // On affiche le décor
   background(currentBg);
 
@@ -22,7 +32,7 @@ function draw() {
   player.update();
   player.draw();
   
-  // On gère l'ennemi
+  // On gère les ennemis
   if (mushroomEnemy) {
     mushroomEnemy.update();
     mushroomEnemy.draw();
@@ -35,7 +45,7 @@ function draw() {
     }
   }
 
-  // On affiche les murs de collision
+  // On affiche les murs de collision (à masquer pour le rendu final)
   drawWalls();
   
   // Outil de mesure
@@ -58,6 +68,46 @@ function showCoords() {
   noStroke();
   textSize(12);
   text(`X: ${floor(mouseX)} Y: ${floor(mouseY)}`, width - 100, height - 20);
+}
+
+function setupHomeScreen() {
+  const playButton = document.getElementById('play-button');
+  const playButtonImage = document.getElementById('play-button-image');
+
+  if (!playButton || !playButtonImage) {
+    gameStarted = true;
+    loop();
+    return;
+  }
+
+  playButton.addEventListener('mouseenter', () => {
+    playButtonImage.src = 'assets/button/Play-Click.png';
+  });
+
+  playButton.addEventListener('mouseleave', () => {
+    playButtonImage.src = 'assets/button/Play-Idle.png';
+  });
+
+  playButton.addEventListener('click', () => {
+    startGame();
+  });
+}
+
+function startGame() {
+  const homeScreen = document.getElementById('home-screen');
+  const gameWrapper = document.getElementById('game-wrapper');
+
+  if (homeScreen) {
+    homeScreen.style.display = 'none';
+  }
+
+  if (gameWrapper) {
+    gameWrapper.classList.add('active');
+    gameWrapper.setAttribute('aria-hidden', 'false');
+  }
+
+  gameStarted = true;
+  loop();
 }
 
 function keyPressed() {
