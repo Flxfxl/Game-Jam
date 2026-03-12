@@ -27,6 +27,7 @@ function preload() {
   // Charger le son de quack via l'API HTML5 Audio (indépendant de p5.sound)
   try {
     player.quackSound = new Audio('./sound/Duck Quack - Sound Effect (HD).mp3');
+    player.quackSound2 = new Audio('./sound/Saturated_quack.mp3');
     player.quackSound.volume = 0.75;
     player.quackSound.addEventListener('error', (e) => {
       console.warn('Impossible de charger le son de canard', e);
@@ -93,7 +94,7 @@ function takeDamage() {
   updateUI();
 
   // Joue le son de douleur
-  if (player.quackSound) player.quackSound.play();
+  if (player.quackSound2) player.quackSound2.play();
 
   // On active l'invincibilité
   isInvincible = true;
