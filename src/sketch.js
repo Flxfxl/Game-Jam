@@ -24,6 +24,19 @@ function preload() {
     }
   );
 
+  // Charger le son de quack via l'API HTML5 Audio (indépendant de p5.sound)
+  try {
+    player.quackSound = new Audio('./sound/Duck Quack - Sound Effect (HD).mp3');
+    player.quackSound.volume = 0.75;
+    player.quackSound.addEventListener('error', (e) => {
+      console.warn('Impossible de charger le son de canard', e);
+      player.quackSound = null;
+    });
+  } catch (e) {
+    console.warn('Erreur création du son de canard:', e);
+    player.quackSound = null;
+  }
+
   createMushroomEnemy(450, 300);
 }
 
