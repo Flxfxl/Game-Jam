@@ -4,15 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Duck Norris</title>
-    
+    <link rel="stylesheet" href="style.css">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
-    
-    <style>
-        body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #222; }
-        canvas { box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-    </style>
 </head>
 <body>
+    <main class="home-screen" id="home-screen">
+        <div class="home-panel">
+            <h1 class="home-title">Duck Norris</h1>
+            <button id="play-button" class="play-button" type="button" aria-label="Jouer">
+                <img id="play-button-image" src="assets/button/Play-Idle.png" alt="Jouer">
+            </button>
+        </div>
+    </main>
+
+    <section id="game-wrapper" class="game-wrapper" aria-hidden="true">
+        <div id="game-container" class="game-container"></div>
+    </section>
 
     <script src="src/collisions.js"></script>
     <script src="src/map.js"></script>
