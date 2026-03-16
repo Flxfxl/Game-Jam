@@ -2,10 +2,13 @@ let gameStarted = false;
 let health = 3;
 let isInvincible = false;
 let gameOver = false;
+let gameWon = false;
 let duckScrollX = 0;
 let gameOverDuckFrames = [];
 let gameOverDuckFrameIndex = 0;
 let gameOverDuckAnimTimer = 0;
+const levelOrder = ['room1', 'room2'];
+let currentLevelIndex = 0;
 
 // PORTAIL
 let portal = {
@@ -26,12 +29,44 @@ const mushroomStartX = 450;
 const mushroomStartY = 300;
 const mushroomSwarmOffsets = [[-300, -200], [0, 0], [300, 0]];
 
+function getCurrentLevelName() {
+  return levelOrder[currentLevelIndex];
+}
+
 function getMushroomSpawnCoords() {
+  if (getCurrentLevelName() === 'room2') {
+    return [[140, 120], [410, 300], [730, 430]];
+  }
   return mushroomSwarmOffsets.map(([dx, dy]) => [mushroomStartX + dx, mushroomStartY + dy]);
 }
 
+function resetPortalState() {
+  portal.active = false;
+  portal.appeared = false;
+  portal.frameIndex = 0;
+  portal.animTimer = 0;
+}
+
+function loadCurrentLevel() {
+  loadLevel(getCurrentLevelName());
+  spawnMushroomSwarm(getMushroomSpawnCoords());
+  resetPortalState();
+  player.x = 180;
+  player.y = 330;
+}
+
+function goToNextLevel() {
+  if (currentLevelIndex >= levelOrder.length - 1) {
+    gameWon = true;
+    return;
+  }
+
+  currentLevelIndex++;
+  loadCurrentLevel();
+}
+
 function preload() {
-  loadLevel("room1"); 
+  loadLevel(levelOrder[0]); 
   
   // DUCK ANIMATION
   loadImage('./assets/personnage/Canards/ducky_3_spritesheet.png', (sheet) => {
@@ -75,6 +110,11 @@ function setup() {
 function draw() {
   if (!gameStarted) return;
   background(currentBg);
+
+  if (gameWon) {
+    drawVictoryScreen();
+    return;
+  }
 
   if (gameOver) {
     drawGameOverScreen();
@@ -121,7 +161,7 @@ function draw() {
     if (portal.appeared) {
       let hb = player.getHurtbox();
       if (rectCollide(hb.x, hb.y, hb.w, hb.h, portal.x, portal.y, portal.w, portal.h)) {
-        console.log("Victoire !");
+        goToNextLevel();
       }
     }
   }
@@ -173,14 +213,11 @@ function handleGameOver() {
 }
 
 function restartGame() {
+  currentLevelIndex = 0;
+  gameWon = false;
   health = 3;
   updateUI();
-  player.x = 180;
-  player.y = 330;
-  spawnMushroomSwarm(getMushroomSpawnCoords());
-  portal.active = false;
-  portal.appeared = false;
-  portal.frameIndex = 0;
+  loadCurrentLevel();
   gameOver = false;
   const screen = document.getElementById('game-over-screen');
   if (screen) screen.classList.remove('active');
@@ -203,6 +240,17 @@ function drawGameOverScreen() {
   text("GAME OVER", width/2, height/2);
 }
 
+function drawVictoryScreen() {
+  fill(0, 0, 0, 150);
+  rect(0, 0, width, height);
+  textAlign(CENTER);
+  textSize(42);
+  fill(255);
+  text("VICTOIRE !", width / 2, height / 2 - 12);
+  textSize(20);
+  text("Tu as termine tous les niveaux.", width / 2, height / 2 + 24);
+}
+
 function setupHomeScreen() {
   const btn = document.getElementById('play-button');
   if (btn) btn.onclick = startGame;
@@ -211,7 +259,9 @@ function setupHomeScreen() {
 function startGame() {
   document.getElementById('home-screen').style.display = 'none';
   document.getElementById('game-wrapper').classList.add('active');
-  spawnMushroomSwarm(getMushroomSpawnCoords());
+  currentLevelIndex = 0;
+  gameWon = false;
+  loadCurrentLevel();
   gameStarted = true;
   loop();
 }
