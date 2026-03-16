@@ -9,6 +9,21 @@ let gameOverDuckFrameIndex = 0;
 let gameOverDuckAnimTimer = 0;
 const levelOrder = ['room1', 'room2'];
 let currentLevelIndex = 0;
+const portalEntryAnimDuration = 120;
+let portalEntryAnimTimer = 0;
+const levelSettings = {
+  room1: {
+    playerSpawn: { x: 180, y: 330 },
+    portalPos: { x: 820, y: 55 }
+  },
+  room2: {
+    playerSpawn: { x: 180, y: 330 },
+    // Niveau 2: portail en haut a gauche.
+    portalPos: { x: 20, y: 70 },
+    // Spawn quand on arrive par teleportation, proche du portail en haut.
+    playerSpawnFromPortal: { x: 110, y: 100 }
+  }
+};
 
 // PORTAIL
 let portal = {
@@ -18,6 +33,7 @@ let portal = {
   w: 80,
   h: 80,
   spritesApparition: [],
+  spritesFermeture: [],
   spritesIdle: [],
   frameIndex: 0,
   animTimer: 0,
@@ -47,12 +63,38 @@ function resetPortalState() {
   portal.animTimer = 0;
 }
 
-function loadCurrentLevel() {
+function applyCurrentLevelSettings() {
+  const levelName = getCurrentLevelName();
+  const settings = levelSettings[levelName];
+  if (!settings) return;
+
+  portal.x = settings.portalPos.x;
+  portal.y = settings.portalPos.y;
+}
+
+function placePlayerForLevelEntry(fromPortal = false) {
+  const levelName = getCurrentLevelName();
+  const settings = levelSettings[levelName];
+  if (!settings) return;
+
+  if (fromPortal && settings.playerSpawnFromPortal) {
+    player.x = settings.playerSpawnFromPortal.x;
+    player.y = settings.playerSpawnFromPortal.y;
+    return;
+  }
+
+  player.x = settings.playerSpawn.x;
+  player.y = settings.playerSpawn.y;
+}
+
+function loadCurrentLevel(fromPortal = false) {
   loadLevel(getCurrentLevelName());
+  applyCurrentLevelSettings();
   spawnMushroomSwarm(getMushroomSpawnCoords());
   resetPortalState();
-  player.x = 180;
-  player.y = 330;
+  portalEntryAnimTimer = fromPortal ? portalEntryAnimDuration : 0;
+  if (fromPortal) portal.active = true;
+  placePlayerForLevelEntry(fromPortal);
 }
 
 function goToNextLevel() {
@@ -62,7 +104,7 @@ function goToNextLevel() {
   }
 
   currentLevelIndex++;
-  loadCurrentLevel();
+  loadCurrentLevel(true);
 }
 
 function preload() {
@@ -89,6 +131,8 @@ function preload() {
     for (let i = 0; i < 8; i++) {
       portal.spritesIdle[i] = sheet.get(i * 64, 0, 64, 64);
       portal.spritesApparition[i] = sheet.get(i * 64, 64, 64, 64);
+      // 3e ligne du spritesheet (y = 128) = fermeture
+      portal.spritesFermeture[i] = sheet.get(i * 64, 128, 64, 64);
     }
   });
 
@@ -153,16 +197,30 @@ function draw() {
   }
 
   // --- LOGIQUE DU PORTAIL ---
+  let shouldDrawPortal = false;
+  let useClosingAnim = false;
+
+  if (portalEntryAnimTimer > 0 && getCurrentLevelName() === 'room2') {
+    portalEntryAnimTimer--;
+    portal.active = true;
+    shouldDrawPortal = true;
+    useClosingAnim = true;
+  }
+
   if (mushroomEnemies.length === 0) {
     portal.active = true;
-    updatePortalAnimation();
-    drawPortal();
-    
-    if (portal.appeared) {
-      let hb = player.getHurtbox();
-      if (rectCollide(hb.x, hb.y, hb.w, hb.h, portal.x, portal.y, portal.w, portal.h)) {
-        goToNextLevel();
-      }
+    shouldDrawPortal = true;
+  }
+
+  if (shouldDrawPortal) {
+    updatePortalAnimation(useClosingAnim);
+    drawPortal(useClosingAnim);
+  }
+
+  if (mushroomEnemies.length === 0 && portal.appeared) {
+    let hb = player.getHurtbox();
+    if (rectCollide(hb.x, hb.y, hb.w, hb.h, portal.x, portal.y, portal.w, portal.h)) {
+      goToNextLevel();
     }
   }
 
@@ -170,7 +228,18 @@ function draw() {
   showCoords();
 }
 
-function updatePortalAnimation() {
+function updatePortalAnimation(useClosingAnim = false) {
+  if (useClosingAnim) {
+    portal.animTimer++;
+    if (portal.animTimer > 6) {
+      portal.animTimer = 0;
+      if (portal.frameIndex < 7) {
+        portal.frameIndex++;
+      }
+    }
+    return;
+  }
+
   portal.animTimer++;
   if (portal.animTimer > 6) {
     portal.animTimer = 0;
@@ -186,8 +255,13 @@ function updatePortalAnimation() {
   }
 }
 
-function drawPortal() {
-  let img = portal.appeared ? portal.spritesIdle[portal.frameIndex] : portal.spritesApparition[portal.frameIndex];
+function drawPortal(useClosingAnim = false) {
+  let img;
+  if (useClosingAnim) {
+    img = portal.spritesFermeture[portal.frameIndex];
+  } else {
+    img = portal.appeared ? portal.spritesIdle[portal.frameIndex] : portal.spritesApparition[portal.frameIndex];
+  }
   if (img) image(img, portal.x, portal.y, portal.w, portal.h);
 }
 
