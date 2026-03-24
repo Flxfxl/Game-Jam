@@ -158,6 +158,8 @@ function draw() {
   } else {
     player.draw();
   }
+
+  checkCactusDamage();
   
   for (let i = mushroomEnemies.length - 1; i >= 0; i--) {
     const enemy = mushroomEnemies[i];
@@ -204,6 +206,18 @@ function draw() {
 
   drawTimeBox("Total: " + formatTime(totalTimeFrame), 20);
   
+}
+
+function checkCactusDamage() {
+  if (!currentCactusHazards || currentCactusHazards.length === 0 || isInvincible || gameOver) return;
+
+  const hb = player.getHurtbox();
+  for (let zone of currentCactusHazards) {
+    if (rectCollide(hb.x, hb.y, hb.w, hb.h, zone.x, zone.y, zone.w, zone.h)) {
+      takeDamage();
+      break;
+    }
+  }
 }
 
 // ✅ FIX DU BUG ICI
