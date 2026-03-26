@@ -79,13 +79,13 @@ let player = {
     if (keyIsDown(UP_ARROW) || keyIsDown(87)) { nextY -= this.speed; this.isMoving = true; this.lastDirection = 'up'; }
     if (keyIsDown(DOWN_ARROW) || keyIsDown(83)) { nextY += this.speed; this.isMoving = true; this.lastDirection = 'down'; }
 
+    // On utilise une petite zone au pied du canard pour les collisions bloquantes
     if (!this.checkWallCollision(nextX + 6, this.y + 39, 36, 8)) this.x = nextX;
     if (!this.checkWallCollision(this.x + 6, nextY + 39, 36, 8)) this.y = nextY;
 
-    // ANIMATION : On boucle sur les 6 images si elles sont chargées
     if (this.isMoving && this.sprites.length > 0) {
       this.animTimer++;
-      if (this.animTimer > 8) { // Plus fluide (8 frames au lieu de 12)
+      if (this.animTimer > 8) {
         this.frameIndex = (this.frameIndex + 1) % this.sprites.length;
         this.animTimer = 0;
       }
@@ -109,11 +109,18 @@ let player = {
     }
   },
 
+  // Cette fonction vérifie si une zone donnée (nx, ny, nw, nh) touche un mur
   checkWallCollision: function(nx, ny, nw, nh) {
     for (let w of currentWalls) {
       if (rectCollide(nx, ny, nw, nh, w.x, w.y, w.w, w.h)) return true;
     }
     return false;
+  },
+
+  // Nouvelle méthode pour vérifier si le corps du joueur touche un mur (pour les dégâts)
+  isTouchingWall: function() {
+    let hb = this.getHurtbox();
+    return this.checkWallCollision(hb.x, hb.y, hb.w, hb.h);
   },
 
   getAttackHitbox: function() {
@@ -152,7 +159,6 @@ let player = {
       }
     }
 
-    // Cooldown bar
     if (this.attackCooldownTimer > 0) {
       const pct = 1 - this.attackCooldownTimer / this.attackCooldown;
       noStroke(); fill(50, 50, 50, 200); rect(this.x, this.y - 12, this.w, 6);

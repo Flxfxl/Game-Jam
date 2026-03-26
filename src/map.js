@@ -4,8 +4,6 @@ const levels = {
   room1: {
     imagePath: 'assets/map/map.png',
     cactusHazards: [],
-    // On définit les rectangles de collision UNIQUEMENT là où les pieds 
-    // du personnage ne doivent pas passer.
     walls: [
       { x: 0, y: 0, w: 900, h: 64 },   //  Mur Nord
       { x: 0, y: 0, w: 1, h: 600 },    // Mur invisible gauche
@@ -26,30 +24,29 @@ const levels = {
   room2: {
     imagePath: 'assets/map/map2.png',
     cactusHazards: [
-      { x: 126, y: 104, w: 24, h: 26 },
-      { x: 210, y: 168, w: 24, h: 26 },
-      { x: 478, y: 100, w: 24, h: 26 },
-      { x: 657, y: 161, w: 24, h: 26 },
-      { x: 431, y: 387, w: 24, h: 26 },
-      { x: 579, y: 469, w: 24, h: 26 },
-      { x: 726, y: 314, w: 24, h: 26 },
-      { x: 30, y: 430, w: 24, h: 26 }
+      { x: 105, y: 96, w: 24, h: 26 },
+      { x: 210, y: 158, w: 24, h: 26 },
+      { x: 472, y: 96, w: 24, h: 26 },
+      { x: 650, y: 179, w: 24, h: 26 },
+      { x: 296, y: 398, w: 24, h: 26 },
+      { x: 419, y: 479, w: 24, h: 26 },
+      { x: 579, y: 378, w: 24, h: 26 },
+      { x: 30, y: 417, w: 24, h: 26 }
     ],
-    // À TOI DE JOUER : Remplace ces lignes par les hitboxes de ta nouvelle map PNG
     walls: [
       { x: 0, y: 0, w: 1, h: 600 }, // mur invisible gauche
-      {x:0, y:560, w:900, h:40}, // mur du bas
-      {x:0, y:0, w:900, h:60 }, // mur du haut
-      {x:900, y:0, w:1, h:600}, // mur invisible droite
-      { x:0, y:262, w:69, h:100}, // 1er bloc gauche
-      { x:70, y:200, w:227, h:161}, // 1er lac gauche
-      {x:300, y:181, w:68, h:100 }, // 2e bloc à droite du lac
-      {x:157, y: 401, w: 69, h: 100}, // bloc en dessous du lac
-      {x: 370, y:261, w:69, h:100}, // 2e bloc à droite du lac
-      {x: 440, y:237, w:250, h:50}, // muret central
-      {x:670, y:341, w:230, h: 159}, // lac de droite
-      {x: 767, y:169, w:35, h:27} // caillou en haut à droite    
-      ]
+      { x: 0, y: 560, w: 900, h: 40 }, // mur du bas
+      { x: 0, y: 0, w: 900, h: 60 }, // mur du haut
+      { x: 900, y: 0, w: 1, h: 600 }, // mur invisible droite
+      { x: 0, y: 262, w: 69, h: 100 }, // 1er bloc gauche
+      { x: 70, y: 200, w: 227, h: 161 }, // 1er lac gauche
+      { x: 300, y: 181, w: 68, h: 100 }, // 2e bloc à droite du lac
+      { x: 157, y: 401, w: 69, h: 100 }, // bloc en dessous du lac
+      { x: 370, y: 261, w: 69, h: 100 }, // 2e bloc à droite du lac
+      { x: 440, y: 237, w: 250, h: 50 }, // muret central
+      { x: 670, y: 341, w: 230, h: 159 }, // lac de droite
+      { x: 767, y: 169, w: 35, h: 27 } // caillou en haut à droite    
+    ]
   }
 };
 
@@ -57,34 +54,31 @@ let currentWalls = [];
 let currentBg;
 let currentCactusHazards = [];
 
-/**
- * Charge un niveau par son nom (ex: 'room1' ou 'room2')
- */
 function loadLevel(levelName) {
   const level = levels[levelName];
-  
   if (level) {
-    // On charge l'image du décor
     currentBg = loadImage(level.imagePath);
-    // On récupère les zones de collision
     currentWalls = level.walls;
-    // Zones de dégâts (cactus) traversables
     currentCactusHazards = level.cactusHazards || [];
     console.log("Niveau chargé : " + levelName);
   } else {
-    console.error("Le niveau " + levelName + " n'existe pas dans l'objet levels.");
+    console.error("Le niveau " + levelName + " n'existe pas.");
   }
 }
 
-/**
- * Dessine les zones de collision (Debug)
- */
 function drawWalls() {
-  // Astuce : Change le dernier chiffre (l'alpha) à 100 pour voir les rectangles en rose
-  // fill(255, 0, 255, 100); 
   noStroke();
-  fill(255, 0, 255,0); 
+
+  // 1. SURBRILLANCE DES MURS (Bleu/Violet transparent)
+  fill(0, 0, 255, 0); 
   for (let w of currentWalls) {
     rect(w.x, w.y, w.w, w.h);
+  }
+
+  // 2. SURBRILLANCE DES CACTUS / ZONES DE DÉGÂTS (Orange/Rouge vif)
+  // On met un alpha plus élevé pour bien les voir
+  fill(255, 100, 0, 0); 
+  for (let c of currentCactusHazards) {
+    rect(c.x, c.y, c.w, c.h);
   }
 }
