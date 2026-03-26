@@ -1,12 +1,12 @@
 # Projet "Duck Norris" (GAME-JAM)
 
 ## 👥 Membres 
-FOLLIARD Florent
-VIVIEN Oscar
-SPORTES Joey
-TRAORE Mohamed
+- FOLLIARD Florent
+- VIVIEN Oscar
+- SPORTES Joey
+- TRAORE Mohamed
 
-Retrouvez notre jeu sur [Itch.io](https://flx8.itch.io/game-jam-des-bg)
+Retrouvez notre jeu sur [Itch.io](https://flx8.itch.io/Duck-norris)
 
 ### 🎯 Objectifs du projet
 Ce projet a pour objectif de mettre en pratique le langage **Javascript** pour l'intégrer dans le backend d'un jeu type Game Jam.
