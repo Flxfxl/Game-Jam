@@ -30,7 +30,8 @@ let portal = {
   appeared: false,
   closingOnEntry: false,
   closeFrameIndex: 0,
-  closeAnimTimer: 0
+  closeAnimTimer: 0,
+  repositionedForEnemiesCleared: false
 };
 
 const mushroomStartX = 450;
@@ -64,6 +65,7 @@ function resetPortalState() {
   portal.appeared = false;
   portal.frameIndex = 0;
   portal.animTimer = 0;
+  portal.repositionedForEnemiesCleared = false;
 }
 
 function loadCurrentLevel() {
@@ -187,6 +189,15 @@ function draw() {
   }
 
   if (mushroomEnemies.length === 0) {
+    if (!portal.repositionedForEnemiesCleared) {
+      portal.repositionedForEnemiesCleared = true;
+      if (getCurrentLevelName() === 'room2') {
+        portal.x = 10;
+        portal.y = 420;
+      }
+      portal.frameIndex = 0;
+      portal.animTimer = 0;
+    }
     portal.active = true;
     updatePortalAnimation();
     drawPortal();
