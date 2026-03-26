@@ -114,6 +114,13 @@ function preload() {
     }
   });
 
+  loadImage('./assets/personnage/Mushroom/sprite/cute mushroom walk.png', (sheet) => {
+    let sw = 48, sh = 48;
+    for (let i = 0; i < 4; i++) {
+      mushroomWalkFrames[i] = sheet.get(i * sw, 0, sw, sh);
+    }
+  });
+
   loadImage('./assets/portals/purple_portal.png', (sheet) => {
     for (let i = 0; i < 8; i++) {
       portal.spritesIdle[i] = sheet.get(i * 64, 0, 64, 64);
@@ -316,12 +323,13 @@ function handleGameOver() {
 function restartGame() {
   currentLevelIndex = 0;
   gameWon = false;
+  gameOver = false;
   health = 3;
+  isInvincible = false;
   totalGameTime = 0;
   levelTimes = [];
   updateUI();
   loadCurrentLevel();
-  gameOver = false;
   const screen = document.getElementById('game-over-screen');
   if (screen) screen.classList.remove('active');
   loop();
@@ -370,6 +378,10 @@ function drawVictoryScreen() {
   textSize(18);
   fill(255, 215, 0);
   text("TEMPS TOTAL: " + formatTime(totalGameTime), width / 2, yOffset + 15);
+
+  textSize(16);
+  fill(255);
+  text('Appuyer sur "R" pour recommencer', width / 2, yOffset + 45);
 }
 
 function setupHomeScreen() {
@@ -380,15 +392,29 @@ function setupHomeScreen() {
 function startGame() {
   document.getElementById('home-screen').style.display = 'none';
   document.getElementById('game-wrapper').classList.add('active');
+  document.getElementById('game-wrapper').setAttribute('aria-hidden', 'false');
   currentLevelIndex = 0;
   gameWon = false;
+  gameOver = false;
+  health = 3;
+  isInvincible = false;
+  totalGameTime = 0;
+  levelTimes = [];
+  updateUI();
+  const screen = document.getElementById('game-over-screen');
+  if (screen) screen.classList.remove('active');
   loadCurrentLevel();
   gameStarted = true;
   loop();
 }
 
 function keyPressed() {
-  if (gameStarted && !gameOver) player.handleKey(key, keyCode);
+  if (gameStarted && (key === 'r' || key === 'R')) {
+    restartGame();
+    return;
+  }
+
+  if (gameStarted && !gameOver && !gameWon) player.handleKey(key, keyCode);
 }
 
 function showCoords() {

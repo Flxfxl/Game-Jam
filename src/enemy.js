@@ -15,8 +15,7 @@ class Enemy {
     this.vy = 0;
     this.speed = 1;
 
-    // --- MODIFICATION ICI ---
-    this.sprites = []; // On utilise ce tableau pour l'animation
+    this.sprites = [];
     this.frameIndex = 0;
     this.animTimer = 0;
     this.isMoving = false;
@@ -66,10 +65,9 @@ class Enemy {
     if (this.vx < 0) this.facingLeft = true;
     if (this.vx > 0) this.facingLeft = false;
 
-    // --- LOGIQUE D'ANIMATION ---
     if (this.isMoving && this.sprites.length > 0) {
       this.animTimer++;
-      if (this.animTimer > 12) { // Vitesse du dandinement
+      if (this.animTimer > 12) {
         this.frameIndex = (this.frameIndex + 1) % this.sprites.length;
         this.animTimer = 0;
       }
@@ -77,8 +75,7 @@ class Enemy {
   }
 
   draw() {
-    // --- MODIFICATION ICI : On dessine le sprite animé en priorité ---
-    let imgToDraw = (this.sprites.length > 0) ? this.sprites[this.frameIndex] : null;
+    let imgToDraw = this.sprites.length > 0 ? this.sprites[this.frameIndex] : null;
 
     if (imgToDraw) {
       push();
@@ -92,8 +89,8 @@ class Enemy {
       rect(this.x, this.y, this.w, this.h);
     }
 
-    // Debug Hitbox (tu peux mettre l'alpha à 0 pour cacher)
-    stroke(0, 255, 0, 0); 
+    // Debug hitbox masque
+    stroke(0, 255, 0, 0);
     noFill();
     rect(this.x, this.y, this.w, this.h);
   }
@@ -105,21 +102,12 @@ class Enemy {
 }
 
 let mushroomEnemies = [];
+let mushroomWalkFrames = [];
 
-// --- FONCTION DE CRÉATION MISE À JOUR ---
 function createMushroomEnemy(x, y) {
   const enemy = new Enemy(x, y, 48, 48, 36, 8, 6, 39);
   enemy.speed = 0.5;
-
-  // On charge la planche de 4 images et on la découpe
-  loadImage('./assets/personnage/Mushroom/sprite/cute mushroom walk.png', (sheet) => {
-    let sw = 48; // Largeur d'une frame (on suppose 48px)
-    let sh = 48; // Hauteur d'une frame
-    
-    for (let i = 0; i < 4; i++) {
-      enemy.sprites[i] = sheet.get(i * sw, 0, sw, sh);
-    }
-  });
+  enemy.sprites = mushroomWalkFrames;
 
   mushroomEnemies.push(enemy);
   return enemy;
